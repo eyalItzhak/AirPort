@@ -3,6 +3,7 @@
 
 #include "AirportManager.h"
 #include "Date.h"
+#include "General.h"
 
 typedef struct
 {
@@ -12,26 +13,19 @@ typedef struct
 	Date		date;
 }Flight;
 
+void	initFlight(Flight* pFlight,AirportManager* pManager);
 int		isFlightInRoute(const Flight* pFlight, const char* codeSource, const char* codeDest);
 int		countFlightsInRoute(Flight** arr, int size,const char* codeSource, const char* codeDest);
-void	printFlight(const Flight* pFlight);
-void	printFlightV(const void* val);
-
-void	initFlight(Flight* pFlight,const AirportManager* pManager);
+void	printFlight( void *pFlight);
 int		getFlightHour();
-Airport*	setAiportToFlight(const AirportManager* pManager, const char* msg);
-
-void	freeFlight(void* val);
-
-int		loadFlightFromFile(Flight* pF, const AirportManager* pManager, FILE* fp);
-int		loadCompressFlightFromFile(Flight* pF, const AirportManager* pManager, FILE* fp);
-int		saveFlightToFile(const Flight* pF, FILE* fp);
-int		saveCompressFlightToFile(const Flight* pF, FILE* fp);
-void	parseHourDate4Bytes(Flight* pF, int data);
-int		createHourDate4Bytes(int hour,const Date* pDate);
-int		compareByCodeOrig(const void* air1, const void* air2);
-int		compareByCodeDest(const void* air1, const void* air2);
-int		compareByHour(const void* air1, const void* air2);
-int		compareByDate(const void* air1, const void* air2);
-
+Airport*	setAiportToFlight(AirportManager* pManager, const char* msg);
+void	freeFlight(Flight* pFlight);
+int		compareFlightByHour(const void* flight1, const void* flight2);
+int		compareFlightByDate(const void* flight1, const void* flight2);
+int		compareFlightByOriginCode(const void* flight1, const void* flight2);
+int		compareFlightByDestinationCode(const void* flight1, const void* flight2);
+int		dontCompareFlights(const void* n1, const void* n2);
+void	writeFlightToBinFile(FILE *file, Flight* flight);
+void	readFlightFromBinFile(FILE *file, Flight *flight);
+void	setFlightByParameter(Flight* flight ,char* origin, char* dest, int hour, Date* date);
 #endif

@@ -1,7 +1,7 @@
 #ifndef __AIRPORT__
 #define __AIRPORT__
 
-#define CODE_LENGTH 3
+#include "General.h"
 
 typedef struct
 {
@@ -11,17 +11,14 @@ typedef struct
 }Airport;
 
 int		isSameAirport(const Airport* pPort1, const Airport* pPort2);
-int		compareAirport(const void* e1, const void* e2);
 int		isAirportCode(const Airport* pPort1, const char* code);
-void	printAirport(const void* e1);
 void	initAirportNoCode(Airport* pPort);
-
-void    getAirportCode(char* code);
+void	printAirport(const Airport* pPort);
 void	getAirportName(Airport* pPort);
 void	changeEvenWord(char* str);
-void	freeAirport(void* e1);
-
-int		saveAirportToFile(const Airport* pAir, FILE* fp);
-int		loadAirportFromFile(Airport* pAir, FILE* fp);
-
+void    getAirportCode(char* code);
+void	freeAirport(Airport* pPort);
+int		compareAirportByIATA(void* airport1, void* airport2);
+int		readAirportFromTextFile(FILE* file, Airport* airport);
+void	 writeAirportToTextFile(FILE *file, void* airport);
 #endif

@@ -15,7 +15,7 @@ void getCorrectDate(Date* pDate)
 
 	do {
 		puts("Enter Flight Date dd/mm/yyyy\t");
-		myGets(date, MAX_STR_LEN, stdin);
+		myGets(date, MAX_STR_LEN);
 		ok = checkDate(date, pDate);
 		if (!ok)
 			printf("Error try again\n");
@@ -46,23 +46,40 @@ int	 checkDate(char* date, Date* pDate)
 
 void printDate(const Date* pDate)
 {
-	printf("Date: %02d/%02d/%4d\t", pDate->day, pDate->month, pDate->year);
+	printf("Date: %d/%d/%d\n", pDate->day, pDate->month, pDate->year);
+}
+void freeDate(void* date) // to use generic free function to free date 
+{
+	return;
+}
+int compareDate(const void* date1,const void* date2)
+{
+	Date* d1 = (Date*)date1;
+	Date* d2 = (Date*)date2;
+
+	int compare = d1->year - d2->year;
+
+	if (compare == 0)
+	{
+		compare = d1->month - d2->month;
+		if (compare == 0)
+		{
+			compare = d1->day - d2->day;
+		}
+	}
+	return compare;
 }
 
-char*  createDateString(const Date* pDate)
-{
-	char str[MAX_STR_LEN];
-	sprintf(str,"Date: %02d/%02d/%4d\t", pDate->day, pDate->month, pDate->year);
 
-	return getDynStr(str);
+void readDateFromBinFile(FILE *file, Date* date)
+{
+	fread(&date->day, sizeof(int), 1, file);
+	fread(&date->month, sizeof(int), 1, file);
+	fread(&date->year, sizeof(int), 1, file);
 }
-
-int		 equalDate(const Date* pDate1, const Date* pDate2)
+void writeDateToBinFile(FILE *file, Date *date)
 {
-	if (pDate1->year == pDate2->year &&
-		pDate1->month == pDate2->month &&
-		pDate1->day == pDate2->day)
-		return 1;
-	return 0;
-
+	fwrite(&date->day, sizeof(int),  1, file);
+	fwrite(&date->month, sizeof(int), 1, file);
+	fwrite(&date->year, sizeof(int), 1, file);
 }

@@ -4,32 +4,44 @@
 #include "Company.h"
 #include "AirportManager.h"
 #include "General.h"
-#include "main.h"
-#include "myMacros.h"
+
+/*
+Ohad  Saada 204624209
+liron Shish 315238915
+*/
+typedef enum 
+{ 
+	eAddFlight, eAddAirport, ePrintCompany, ePrintAirports,
+	ePrintFlightOrigDest,eSortFlights, eSearchFlight, eNofOptions
+} eMenuOptions;
 
 const char* str[eNofOptions] = { "Add Flight", "Add Airport",
-"PrintCompany", "Print all Airports",
-	"Print flights between origin-destination",
-"Sort Flights", "Search Flight" };
+								"PrintCompany", "Print all Airports",
+								"Print flights between origin-destination"
+								,"Sort flights by parameter" , "Search flight"
+								};
 
+#define EXIT			-1
+int menu();
 
-int main(int  argc, char*  argv[])
+int main()
 {
 	AirportManager	manager;
 	Company			company;
 
-	if (argc != 3)
-		ERROR_MSG_PAUSE_RETURN_0("Error in main parameters");
+	FILE* txtFile = fopen("airport_authority.txt", "r");
+	FILE* binFile = fopen("company.bin", "rb");
 
-	char* managerFileName = argv[1];
-	char* companyFileName = argv[2];
-
-
-	if (!initManagerAndCompany(&manager, managerFileName, &company, companyFileName))
-		ERROR_MSG_PAUSE_RETURN_0("Error init company and airport manager");
-
-	
-
+	if (!txtFile || !binFile)  //If the file not exist
+	{
+		initManager(&manager);
+		initCompany(&company);
+	}
+	else
+	{
+		initAirportManagerFromTextFile(txtFile, &manager);
+		initCompanyFromBinaryFile(binFile, &company);
+	}
 	int option;
 	int stop = 0;
 	
@@ -50,23 +62,22 @@ int main(int  argc, char*  argv[])
 			break;
 
 		case ePrintCompany:
-			printCompany(&company,"Hachi","Babit","Ba","Olam",NULL);
+			printCompany(&company);
 			break;
 
 		case ePrintAirports:
 			printAirports(&manager);
 			break;
-		
+
 		case ePrintFlightOrigDest:
 			printFlightsCount(&company);
 			break;
-		
-		case eSortFlights:
-			sortFlight(&company);
-			break;
 
+		case eSortFlights:
+			sortFlightsByParameter(&company);
+			break;
 		case eSearchFlight:
-			findFlight(&company);
+			searchFlightByParameter(&company);
 			break;
 
 		case EXIT:
@@ -79,14 +90,12 @@ int main(int  argc, char*  argv[])
 			break;
 		}
 	} while (!stop);
-
-
-	saveManagerToFile(&manager, managerFileName);
-	saveCompanyToFile(&company, companyFileName);
-
+	FILE* writeTxtFile = fopen("airport_authority.txt", "w");
+	FILE* writeBinFile = fopen("company.bin", "wb");
+	writeAirportmanagerToTextFile(writeTxtFile, &manager);
+	writeCompanyToBinaryFile(writeBinFile, &company);
 	freeManager(&manager);
 	freeCompany(&company);
-
 	system("pause");
 	return 1;
 }
@@ -100,29 +109,8 @@ int menu()
 		printf("%d - %s\n",i,str[i]);
 	printf("%d - Quit\n", EXIT);
 	scanf("%d", &option);
-	
 	//clean buffer
 	char tav;
 	scanf("%c", &tav);
 	return option;
-}
-
-int initManagerAndCompany(AirportManager* pManager, const char* managerFileName,
-	Company* pCompany, const char* companyFileName)
-{
-	int res = initManager(pManager, managerFileName);
-	if (!res)
-	{
-		printf("error init manager\n");
-		return 0;
-	}
-	
-	if (res == FROM_FILE)
-	{
-		if (!initCompanyFromFile(pCompany, pManager, companyFileName))
-			initCompany(pCompany, pManager);
-	}
-	else
-		initCompany(pCompany, pManager);
-	return 1;
 }

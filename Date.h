@@ -13,7 +13,8 @@ typedef struct
 void	getCorrectDate(Date* pDate);
 int		checkDate(char* date, Date* pDate);
 void	printDate(const Date* pDate);
-char*   createDateString(const Date* pDate);
+int		compareDate(const void* date1, const void* date2);
+void	freeDate(void* date);
+void	writeDateToBinFile(FILE *file, Date *date);
 
-int		 equalDate(const Date* pDate1, const Date* pDate2);
 #endif

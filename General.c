@@ -2,10 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdarg.h>
-
+#include "Flight.h"
 #include "General.h"
-#include "myMacros.h"
+
 
 
 char* getStrExactName(const char* msg)
@@ -13,7 +12,7 @@ char* getStrExactName(const char* msg)
 	char* str;
 	char temp[MAX_STR_LEN];
 	printf("%s\t", msg);
-	myGets(temp, MAX_STR_LEN,stdin);
+	myGets(temp, MAX_STR_LEN);
 
 	str = getDynStr(temp);
 	return str;
@@ -23,8 +22,8 @@ char* getDynStr(char* str)
 {
 	char* theStr;
 	theStr = (char*)malloc((strlen(str) + 1) * sizeof(char));
-	CHECK_RETURN_NULL(theStr);
-	
+	if (!theStr)
+		return NULL;
 
 	strcpy(theStr, str);
 	return theStr;
@@ -32,11 +31,11 @@ char* getDynStr(char* str)
 
 
 
-char*  myGets(char* buffer, int size, FILE* fp)
+char*  myGets(char* buffer, int size)
 {
 	if (buffer != NULL && size > 0)
 	{
-		if (fgets(buffer, size, fp))
+		if (fgets(buffer, size, stdin))
 		{
 			buffer[strcspn(buffer, "\n")] = '\0';
 			return buffer;
@@ -61,7 +60,8 @@ char**	splitCharsToWords(char* str, int* pCount, int* pTotalLength)
 	while (word != NULL)
 	{
 		wordsArray = (char**)realloc(wordsArray,(count + 1)*sizeof(char*));
-		CHECK_RETRUN_0(wordsArray);
+		if (!wordsArray)
+			return 0;
 		wordsArray[count] = getDynStr(word);
 		count++;
 		*pTotalLength += (int)strlen(word);
@@ -71,41 +71,62 @@ char**	splitCharsToWords(char* str, int* pCount, int* pTotalLength)
 	return wordsArray;
 }
 
-void	printStr(const void* str)
+void myQsort(void** arr, size_t numOfElements, size_t sizeOfElement, int(*compare)(const void*,const void*))
 {
-	puts(str);
-}
-
-void	freePtr(void* str)
-{
-	free(str);
-}
-
-
-
-void generalArrayFunction(void* arr, int size, int typeSize, void(*func)(void* element))
-{
-	for (int i = 0; i < size; i++)
-		func((char*)(arr)+i*typeSize);
-
-}
-
-char*	catStrings(char* base,char* first, va_list lst)
-{
-	char* resStr = (char*)malloc( (strlen(base)+1)*sizeof(char));
-	if (!resStr)
-		return NULL;
-	strcpy(resStr, base);
-	char* str = first;
-	while (str != NULL)
+	int i, j;
+	void* temp;
+	for (i = 0; i < numOfElements - 1 ; ++i)
 	{
-		resStr = (char*)realloc(resStr,(strlen(resStr)+strlen(str)+2) * sizeof(char));
-		if (!resStr)
-			return NULL;
-		strcat(resStr,"_");
-		strcat(resStr, str);
-		str = va_arg(lst, char*);
+		for (j = 0; j < numOfElements - i - 1 ; ++j)
+		{
+			if (compare((arr+j) , (arr + j + 1)) > 0 )
+			{
+				temp = *(arr + j + 1);
+				*(arr + j + 1)  =  *(arr + j ) ;
+				*(arr + j ) = temp;
+			}
+		}
 	}
-	va_end(lst);
-	return resStr;
+	
+}
+void fixStr(char* str)
+{
+	char* temp = str;
+	int count = 0;
+	while (*temp != '\n')
+	{
+		count++;
+		temp++;
+	}
+	str[count] = '\0';
+}
+
+
+int readStringFromTextFile(FILE* file, char* buffer)
+{
+	char temp[MAX_STR_LEN];
+	if (fgets(temp, MAX_STR_LEN, file) == NULL)
+		return 0;
+	fixStr(temp);
+	strcpy(buffer, temp);
+	return 1;
+}
+int readIntFromTextFile(FILE* file, int* buffer)
+{
+	char tav;
+	if (fscanf(file, "%d", buffer) == 0)
+		return 0;
+	fscanf(file, "%c", &tav);
+	return 1;
+}
+
+void generalArrayFunction(void **arr, size_t numOfElements, size_t sizeOfEachElement, void(*func)(void*))
+{
+	char** tmp = (char**)arr;
+	for (int i = 0; i < numOfElements; i ++)
+	{	
+		
+		func(*(tmp + i ));
+		
+	}
 }

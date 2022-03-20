@@ -2,31 +2,20 @@
 #define __AIR_MANAGER__
 
 #include "Airport.h"
-#include "GeneralList.h"
-
-#define ERROR 0
-#define FROM_FILE 1
-#define FROM_USER 2
-
+#include "listGen.h"
 typedef struct
 {
-	LIST		airportList;
+	LIST	airportList;
 	int			count;
 }AirportManager;
 
-int		initManager(AirportManager* pManager, const char* fileName);
-int		 addAirport(AirportManager* pManager);
-void	insertPortToListSorted(LIST* airportList, Airport* pPort);
-Airport* createAirport(AirportManager* pManager);
-Airport* findAirportByCode(const AirportManager* pManager, const char* code);
-int		checkUniqeCode(const char* code, const AirportManager* pManager);
-void	printAirports(const AirportManager* pManager);
-
-int		saveManagerToFile(const AirportManager* pManager, const char* fileName);
-int		loadManagerFromFile(AirportManager* pManager, const char* fileName);
-
-
+int		initManager(AirportManager* pManager);
+int		addAirport(AirportManager* pManager);
+void	setAirport(Airport* pPort, AirportManager* pManager);
+Airport* findAirportByCode(AirportManager* pManager, const char* code);
+int		checkUniqeCode(const char* code, AirportManager* pManager);
+void	printAirports(AirportManager* pManager);
 void	freeManager(AirportManager* pManager);
-
-
+void	initAirportManagerFromTextFile(FILE* file, AirportManager* pManager);
+void	writeAirportmanagerToTextFile(FILE *file, AirportManager* pManager);
 #endif
