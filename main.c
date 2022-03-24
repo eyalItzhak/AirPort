@@ -5,10 +5,7 @@
 #include "AirportManager.h"
 #include "General.h"
 
-/*
-Ohad  Saada 204624209
-liron Shish 315238915
-*/
+
 typedef enum 
 { 
 	eAddFlight, eAddAirport, ePrintCompany, ePrintAirports,
